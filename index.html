@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Airdrop Earn</title>
+<title>Task Earn</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 <style>
@@ -12,292 +12,118 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: var(--tg-theme-bg-color, #0f0f23);
     color: var(--tg-theme-text-color, #fff);
-    min-height: 100vh;
-    overflow-x: hidden;
+    min-height: 100vh; overflow-x: hidden;
   }
   .app { max-width: 480px; margin: 0 auto; padding: 16px; padding-bottom: 100px; }
-
-  /* Pages */
   .page { display: none; animation: fade 0.25s ease; }
   .page.active { display: block; }
   @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-
-  /* Header */
   header {
     display: flex; justify-content: space-between; align-items: center;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     padding: 14px 16px; border-radius: 16px; margin-bottom: 20px;
-    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
   }
   .user-info { display: flex; align-items: center; gap: 10px; min-width: 0; }
-  .user-info img {
-    width: 40px; height: 40px; border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.4); object-fit: cover; background: #333;
-    flex-shrink: 0;
-  }
-  .user-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+  .user-info img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.4); flex-shrink: 0; }
+  .user-name { font-size: 14px; font-weight: 600; }
   .user-id { font-size: 11px; opacity: 0.85; }
   .balance-box { text-align: right; flex-shrink: 0; }
-  .balance-label { font-size: 11px; opacity: 0.9; }
   .balance-value { font-size: 20px; font-weight: bold; }
-  .coin { font-size: 16px; }
 
-  /* Cards */
-  .earn-card {
-    background: linear-gradient(135deg, #1e1e3f 0%, #2a2a5a 100%);
-    border: 1px solid rgba(102, 126, 234, 0.3);
-    border-radius: 20px; padding: 24px 20px; text-align: center;
-    margin-bottom: 16px; position: relative; overflow: hidden;
-  }
-  .earn-card::before {
-    content: ''; position: absolute; top: -50%; right: -50%;
-    width: 200%; height: 200%;
-    background: radial-gradient(circle, rgba(102,126,234,0.15) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .earn-card h2 { font-size: 20px; margin-bottom: 6px; position: relative; }
-  .earn-card p { font-size: 13px; opacity: 0.75; margin-bottom: 18px; position: relative; }
-
-  .btn-primary {
-    width: 100%; padding: 16px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #fff; border: none; border-radius: 12px;
-    font-size: 16px; font-weight: 600; cursor: pointer;
-    transition: transform 0.15s, opacity 0.2s;
-    position: relative;
-    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
-  }
-  .btn-primary:active { transform: scale(0.97); }
-  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  .daily-info { margin-top: 12px; font-size: 12px; opacity: 0.7; }
-  .daily-info b { color: #667eea; }
-
-  /* Stats */
-  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-  .stat-card {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 16px; padding: 16px; text-align: center;
-  }
-  .stat-icon { font-size: 22px; margin-bottom: 4px; }
-  .stat-value { font-size: 20px; font-weight: bold; color: #667eea; }
-  .stat-label { font-size: 12px; opacity: 0.7; margin-top: 4px; }
-
-  /* Card */
   .card {
     background: rgba(255,255,255,0.05);
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 16px; padding: 18px; margin-bottom: 16px;
   }
-  .card h3 { font-size: 15px; margin-bottom: 10px; }
+  .card h3 { font-size: 15px; margin-bottom: 12px; }
   .card p { font-size: 13px; opacity: 0.75; margin-bottom: 12px; }
 
-  /* Referral */
+  .task-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .task-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .task-info { flex: 1; min-width: 0; }
+  .task-title { font-size: 13px; font-weight: 600; }
+  .task-desc { font-size: 11px; opacity: 0.6; margin-top: 2px; }
+  .task-reward { font-size: 12px; color: #10b981; font-weight: 600; margin-right: 8px; }
+
+  .btn {
+    padding: 8px 16px; border-radius: 8px; font-size: 12px;
+    font-weight: 600; cursor: pointer; border: none; transition: 0.2s;
+  }
+  .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-ad { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; }
+  .btn-ad:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-secondary { background: rgba(102,126,234,0.15); color: #667eea; border: 1px solid #667eea; }
+
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .stat-card {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px; padding: 16px; text-align: center;
+  }
+  .stat-value { font-size: 20px; font-weight: bold; color: #667eea; }
+  .stat-label { font-size: 12px; opacity: 0.7; margin-top: 4px; }
+
   .ref-link { display: flex; gap: 8px; margin-bottom: 10px; }
   .ref-link input {
-    flex: 1; padding: 12px;
-    background: rgba(0,0,0,0.35);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 10px; color: #fff;
-    font-size: 11px; min-width: 0;
+    flex: 1; padding: 12px; background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
+    color: #fff; font-size: 11px; min-width: 0;
   }
-  .ref-link button {
-    padding: 12px 16px; background: #667eea; color: #fff;
-    border: none; border-radius: 10px; font-weight: 600;
-    cursor: pointer; font-size: 13px;
-  }
-  .btn-secondary {
-    width: 100%; padding: 12px;
-    background: rgba(102, 126, 234, 0.15);
-    color: #667eea; border: 1px solid #667eea;
-    border-radius: 10px; font-weight: 600;
-    cursor: pointer; font-size: 14px;
-  }
+  .ref-link button { padding: 12px 16px; background: #667eea; color: #fff; border: none; border-radius: 10px; font-weight: 600; font-size: 13px; }
 
-  /* Tasks */
-  .task {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-  }
-  .task:last-child { border-bottom: none; padding-bottom: 0; }
-  .task span { font-size: 13px; }
-  .task-btn {
-    padding: 8px 16px; background: #667eea; color: #fff;
-    border: none; border-radius: 8px; font-size: 12px;
-    font-weight: 600; cursor: pointer;
-  }
-  .task-btn:disabled { background: #27ae60; cursor: default; }
-
-  /* Wallet */
-  .wallet-balance-card {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    border-radius: 20px; padding: 24px 20px; text-align: center;
-    margin-bottom: 16px;
-    box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
-  }
-  .wallet-balance-card .label { font-size: 12px; opacity: 0.9; }
-  .wallet-balance-card .amount { font-size: 34px; font-weight: bold; margin: 6px 0; }
-  .wallet-balance-card .usd { font-size: 13px; opacity: 0.9; }
-
-  .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-  .method {
-    background: rgba(255,255,255,0.05);
-    border: 2px solid rgba(255,255,255,0.1);
-    border-radius: 14px; padding: 14px; text-align: center;
-    cursor: pointer; transition: all 0.2s;
-  }
-  .method.selected {
-    border-color: #667eea;
-    background: rgba(102, 126, 234, 0.15);
-  }
-  .method .m-icon { font-size: 24px; margin-bottom: 4px; }
-  .method .m-name { font-size: 13px; font-weight: 600; }
-  .method .m-rate { font-size: 11px; opacity: 0.7; margin-top: 2px; }
-
-  .input-field {
-    width: 100%; padding: 14px;
-    background: rgba(0,0,0,0.35);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px; color: #fff; font-size: 14px;
-    margin-bottom: 10px;
-  }
-  .input-field::placeholder { color: rgba(255,255,255,0.4); }
-
-  .withdraw-btn {
-    width: 100%; padding: 14px;
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    color: #fff; border: none; border-radius: 12px;
-    font-size: 15px; font-weight: 600; cursor: pointer;
-    margin-top: 4px;
-  }
-  .withdraw-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  .history-item {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-    font-size: 13px;
-  }
-  .history-item:last-child { border-bottom: none; }
-  .history-status {
-    font-size: 11px; padding: 3px 8px; border-radius: 6px;
-    background: rgba(245,158,11,0.2); color: #f59e0b;
-  }
-  .history-status.success { background: rgba(16,185,129,0.2); color: #10b981; }
-  .history-status.failed { background: rgba(239,68,68,0.2); color: #ef4444; }
-
-  /* Friends */
-  .friend-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-  }
-  .friend-item:last-child { border-bottom: none; }
-  .friend-avatar {
-    width: 36px; height: 36px; border-radius: 50%;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    display: flex; align-items: center; justify-content: center;
-    font-weight: bold; font-size: 14px;
-    flex-shrink: 0;
-  }
-  .friend-info { flex: 1; min-width: 0; }
-  .friend-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .friend-date { font-size: 11px; opacity: 0.6; }
-  .friend-bonus { font-size: 12px; color: #10b981; font-weight: 600; }
-
-  .empty-state { text-align: center; padding: 30px 10px; opacity: 0.6; font-size: 13px; }
-  .empty-state .big { font-size: 40px; margin-bottom: 8px; }
-
-  /* Bottom nav */
   .bottom-nav {
     position: fixed; bottom: 0; left: 0; right: 0;
     display: flex; justify-content: space-around;
     background: var(--tg-theme-bg-color, #0f0f23);
     border-top: 1px solid rgba(255,255,255,0.1);
-    padding: 10px 0 14px;
-    max-width: 480px; margin: 0 auto;
-    backdrop-filter: blur(10px);
-    z-index: 100;
+    padding: 10px 0 14px; max-width: 480px; margin: 0 auto; z-index: 100;
   }
   .nav-btn {
-    background: none; border: none;
-    color: rgba(255,255,255,0.5);
-    font-size: 12px; padding: 6px 16px;
-    cursor: pointer; font-weight: 500;
+    background: none; border: none; color: rgba(255,255,255,0.5);
+    font-size: 12px; padding: 6px 16px; cursor: pointer;
     display: flex; flex-direction: column; align-items: center; gap: 2px;
   }
-  .nav-btn .icon { font-size: 18px; }
   .nav-btn.active { color: #667eea; }
+  .nav-btn .icon { font-size: 18px; }
 
-  /* Toast */
   .toast {
     position: fixed; top: 20px; left: 50%;
     transform: translateX(-50%) translateY(-100px);
-    background: #667eea; color: #fff;
-    padding: 12px 22px; border-radius: 12px;
-    font-size: 14px; font-weight: 500;
-    transition: transform 0.3s ease;
-    z-index: 9999; max-width: 90%;
-    text-align: center;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-    pointer-events: none;
+    background: #667eea; color: #fff; padding: 12px 22px;
+    border-radius: 12px; font-size: 14px; transition: transform 0.3s;
+    z-index: 9999; max-width: 90%; text-align: center;
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
   .toast.error { background: #e74c3c; }
   .toast.success { background: #27ae60; }
 
-  /* Loading */
   .loading-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.7);
     display: none; align-items: center; justify-content: center;
-    z-index: 9998; backdrop-filter: blur(4px);
-    flex-direction: column; gap: 14px;
+    z-index: 9998; flex-direction: column; gap: 14px;
   }
   .loading-overlay.show { display: flex; }
   .spinner {
-    width: 48px; height: 48px;
-    border: 4px solid rgba(255,255,255,0.15);
-    border-top-color: #667eea;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
+    width: 48px; height: 48px; border: 4px solid rgba(255,255,255,0.15);
+    border-top-color: #667eea; border-radius: 50%; animation: spin 0.8s linear infinite;
   }
-  .loading-overlay .msg { font-size: 13px; opacity: 0.8; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* Modal */
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.75);
-    display: none; align-items: flex-end; justify-content: center;
-    z-index: 9997;
+  .badge {
+    display: inline-block; font-size: 10px; padding: 2px 8px;
+    border-radius: 6px; background: rgba(16,185,129,0.2); color: #10b981;
   }
-  .modal-overlay.show { display: flex; }
-  .modal {
-    background: #1a1a2e;
-    border-radius: 20px 20px 0 0;
-    padding: 24px 20px 30px;
-    width: 100%; max-width: 480px;
-    transform: translateY(100%);
-    transition: transform 0.3s;
-  }
-  .modal-overlay.show .modal { transform: translateY(0); }
-  .modal h3 { margin-bottom: 10px; font-size: 17px; }
-  .modal p { font-size: 14px; opacity: 0.8; margin-bottom: 16px; line-height: 1.5; }
-  .modal .row { display: flex; gap: 10px; }
-  .modal .row button {
-    flex: 1; padding: 13px; border-radius: 12px;
-    font-weight: 600; cursor: pointer; border: none; font-size: 14px;
-  }
-  .modal .cancel { background: rgba(255,255,255,0.1); color: #fff; }
-  .modal .confirm { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
+  .badge.pending { background: rgba(245,158,11,0.2); color: #f59e0b; }
 </style>
 </head>
 <body>
 
 <div class="app">
 
-  <!-- ============ HOME PAGE ============ -->
+  <!-- ============ HOME (TASK CENTER) ============ -->
   <div class="page active" id="page-home">
     <header>
       <div class="user-info">
@@ -308,31 +134,69 @@
         </div>
       </div>
       <div class="balance-box">
-        <div class="balance-label">Balance</div>
-        <div class="balance-value"><span id="balance">0</span> <span class="coin">🪙</span></div>
+        <div style="font-size:11px; opacity:0.9;">Balance</div>
+        <div class="balance-value"><span id="balance">0</span> 🪙</div>
       </div>
     </header>
 
-    <div class="earn-card">
-      <h2>💰 Watch Ad & Earn</h2>
-      <p>Watch a full ad and get <b>10 coins</b> instantly</p>
-      <button id="watchAdBtn" class="btn-primary">▶️ Watch Ad</button>
-      <div class="daily-info">Today watched: <b><span id="todayCount">0</span> / 20</b></div>
+    <!-- মূল কাজ: দৈনিক চেক-ইন (বিজ্ঞাপন ছাড়াই) -->
+    <div class="card">
+      <h3>📅 Daily Check-in</h3>
+      <p>Claim your daily reward. No ad required.</p>
+      <div class="task-row">
+        <div class="task-info">
+          <div class="task-title">Day 1 Bonus</div>
+          <div class="task-desc">Come back tomorrow for more</div>
+        </div>
+        <div class="task-reward">+20 🪙</div>
+        <button class="btn btn-primary" id="checkinBtn">Claim</button>
+      </div>
     </div>
 
+    <!-- মূল কাজ: প্রোফাইল সম্পূর্ণ করা (বিজ্ঞাপন ছাড়াই) -->
+    <div class="card">
+      <h3>👤 Complete Profile</h3>
+      <p>Finish your profile to unlock rewards.</p>
+      <div class="task-row">
+        <div class="task-info">
+          <div class="task-title">Set Username</div>
+          <div class="task-desc">Add a username to your account</div>
+        </div>
+        <div class="task-reward">+30 🪙</div>
+        <button class="btn btn-primary" id="profileBtn">Set</button>
+      </div>
+    </div>
+
+    <!-- বিজ্ঞাপন-ভিত্তিক বোনাস (আলাদা সেকশনে) -->
+    <div class="card">
+      <h3>🎁 Bonus Rewards (Watch Ad)</h3>
+      <p>Optional: watch a short ad to double your daily bonus.</p>
+      <div class="task-row">
+        <div class="task-info">
+          <div class="task-title">Watch Ad Bonus</div>
+          <div class="task-desc">Watch full ad to get bonus coins</div>
+        </div>
+        <div class="task-reward">+10 🪙</div>
+        <button class="btn btn-ad" id="watchAdBtn">▶️ Watch</button>
+      </div>
+      <div style="font-size:11px; opacity:0.5; margin-top:8px; text-align:center;">
+        Today: <span id="todayCount">0</span> / 20 ads
+      </div>
+    </div>
+
+    <!-- পরিসংখ্যান -->
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-icon">👥</div>
         <div class="stat-value" id="refCount">0</div>
         <div class="stat-label">Referrals</div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon">🏆</div>
         <div class="stat-value" id="totalEarned">0</div>
         <div class="stat-label">Total Earned</div>
       </div>
     </div>
 
+    <!-- রেফারেল -->
     <div class="card">
       <h3>🎁 Invite Friends</h3>
       <p>Get <b>50 coins</b> per referral</p>
@@ -340,246 +204,146 @@
         <input type="text" id="refLink" readonly>
         <button id="copyBtn">Copy</button>
       </div>
-      <button id="shareBtn" class="btn-secondary">Share on Telegram</button>
-    </div>
-
-    <div class="card">
-      <h3>📋 Tasks</h3>
-      <div class="task" data-task="join_channel">
-        <span>📢 Join our Channel</span>
-        <button class="task-btn" data-url="https://t.me/yourchannel">Go</button>
-      </div>
-      <div class="task" data-task="join_group">
-        <span>💬 Join our Group</span>
-        <button class="task-btn" data-url="https://t.me/yourgroup">Go</button>
-      </div>
+      <button class="btn btn-secondary" id="shareBtn" style="width:100%; padding:12px;">Share on Telegram</button>
     </div>
   </div>
 
-  <!-- ============ WALLET PAGE ============ -->
+  <!-- ============ WALLET ============ -->
   <div class="page" id="page-wallet">
     <h2 style="margin-bottom:16px;">💼 Wallet</h2>
-
-    <div class="wallet-balance-card">
-      <div class="label">Total Balance</div>
-      <div class="amount"><span id="walletBalance">0</span> 🪙</div>
-      <div class="usd">≈ $<span id="walletUsd">0.00</span> USD</div>
+    <div class="card" style="background: linear-gradient(135deg, #f59e0b, #d97706); border:none;">
+      <div style="text-align:center; padding:16px 0;">
+        <div style="font-size:12px; opacity:0.9;">Total Balance</div>
+        <div style="font-size:34px; font-weight:bold; margin:6px 0;"><span id="walletBalance">0</span> 🪙</div>
+        <div style="font-size:13px; opacity:0.9;">≈ $<span id="walletUsd">0.00</span> USD</div>
+      </div>
     </div>
-
     <div class="card">
-      <h3>💳 Withdraw Method</h3>
-      <div class="method-grid">
-        <div class="method selected" data-method="bkash">
-          <div class="m-icon">🅱️</div>
-          <div class="m-name">bKash</div>
-          <div class="m-rate">1000 🪙 = ৳10</div>
-        </div>
-        <div class="method" data-method="nagad">
-          <div class="m-icon">🅝</div>
-          <div class="m-name">Nagad</div>
-          <div class="m-rate">1000 🪙 = ৳10</div>
-        </div>
-        <div class="method" data-method="usdt">
-          <div class="m-icon">💎</div>
-          <div class="m-name">USDT (TRC20)</div>
-          <div class="m-rate">1000 🪙 = $0.10</div>
-        </div>
-        <div class="method" data-method="ton">
-          <div class="m-icon">💠</div>
-          <div class="m-name">TON</div>
-          <div class="m-rate">1000 🪙 = 0.02 TON</div>
-        </div>
-      </div>
-
-      <input type="text" id="walletAddress" class="input-field" placeholder="Enter your bKash number">
-      <input type="number" id="withdrawAmount" class="input-field" placeholder="Amount (min 5000 🪙)">
-      <div style="font-size:12px; opacity:0.6; margin-bottom:10px;" id="withdrawHint">
-        Min withdraw: 5000 🪙 (≈ ৳50)
-      </div>
-      <button id="withdrawBtn" class="withdraw-btn">💸 Request Withdraw</button>
+      <h3>💳 Withdraw</h3>
+      <input type="text" id="walletAddress" placeholder="bKash/Nagad number" style="width:100%; padding:12px; background:rgba(0,0,0,0.35); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; margin-bottom:10px;">
+      <input type="number" id="withdrawAmount" placeholder="Amount (min 5000)" style="width:100%; padding:12px; background:rgba(0,0,0,0.35); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; margin-bottom:10px;">
+      <button class="btn btn-primary" id="withdrawBtn" style="width:100%; padding:14px; font-size:15px;">💸 Request Withdraw</button>
     </div>
-
     <div class="card">
-      <h3>📜 Withdraw History</h3>
-      <div id="withdrawHistory">
-        <div class="empty-state">
-          <div class="big">📭</div>
-          No withdrawals yet
-        </div>
-      </div>
+      <h3>📜 History</h3>
+      <div id="withdrawHistory"><div style="text-align:center; padding:20px; opacity:0.6; font-size:13px;">No withdrawals yet</div></div>
     </div>
   </div>
 
-  <!-- ============ FRIENDS PAGE ============ -->
+  <!-- ============ FRIENDS ============ -->
   <div class="page" id="page-friends">
     <h2 style="margin-bottom:16px;">👥 Friends</h2>
-
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-icon">👥</div>
         <div class="stat-value" id="friendsCount">0</div>
-        <div class="stat-label">Total Invited</div>
+        <div class="stat-label">Invited</div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon">💰</div>
         <div class="stat-value" id="friendsEarned">0</div>
         <div class="stat-label">Coins Earned</div>
       </div>
     </div>
-
     <div class="card">
       <h3>🔗 Your Invite Link</h3>
-      <p>Earn <b>50 coins</b> for each friend who joins</p>
+      <p>Earn <b>50 coins</b> per friend</p>
       <div class="ref-link">
         <input type="text" id="refLink2" readonly>
         <button id="copyBtn2">Copy</button>
       </div>
-      <button id="shareBtn2" class="btn-secondary">📤 Share on Telegram</button>
+      <button class="btn btn-secondary" id="shareBtn2" style="width:100%; padding:12px;">📤 Share</button>
     </div>
-
     <div class="card">
-      <h3>🎯 Your Referrals</h3>
-      <div id="friendsList">
-        <div class="empty-state">
-          <div class="big">👋</div>
-          No friends invited yet.<br>Share your link to start earning!
-        </div>
-      </div>
+      <h3>🎯 Referrals</h3>
+      <div id="friendsList"><div style="text-align:center; padding:20px; opacity:0.6; font-size:13px;">No friends yet</div></div>
     </div>
   </div>
 
-  <!-- Bottom Nav -->
   <nav class="bottom-nav">
-    <button class="nav-btn active" data-page="home">
-      <span class="icon">🏠</span>Home
-    </button>
-    <button class="nav-btn" data-page="wallet">
-      <span class="icon">💼</span>Wallet
-    </button>
-    <button class="nav-btn" data-page="friends">
-      <span class="icon">👥</span>Friends
-    </button>
+    <button class="nav-btn active" data-page="home"><span class="icon">🏠</span>Home</button>
+    <button class="nav-btn" data-page="wallet"><span class="icon">💼</span>Wallet</button>
+    <button class="nav-btn" data-page="friends"><span class="icon">👥</span>Friends</button>
   </nav>
 </div>
 
 <div id="toast" class="toast"></div>
-<div id="loading" class="loading-overlay">
-  <div class="spinner"></div>
-  <div class="msg" id="loadingMsg">Loading...</div>
-</div>
-
-<!-- Confirm Modal -->
-<div class="modal-overlay" id="modal">
-  <div class="modal">
-    <h3 id="modalTitle">Confirm</h3>
-    <p id="modalText">Are you sure?</p>
-    <div class="row">
-      <button class="cancel" id="modalCancel">Cancel</button>
-      <button class="confirm" id="modalConfirm">Confirm</button>
-    </div>
-  </div>
-</div>
+<div id="loading" class="loading-overlay"><div class="spinner"></div></div>
 
 <script>
-/* ============================================================
-   CONFIG
-   ============================================================ */
 const CONFIG = {
-  ADSGRAM_BLOCK_ID: 'int-50129',   // Adsgram dashboard → real block ID
-  BOT_USERNAME: 'kfnfurnfk_bot',     // তোমার bot username (@ ছাড়া)
-  API_BASE: null,                      // backend থাকলে URL, নাহলে null (local mode)
-
+  ADSGRAM_BLOCK_ID: 'YOUR_BLOCK_ID',
+  BOT_USERNAME: 'YourBotUsername',
   REWARD_PER_AD: 10,
   MAX_DAILY_ADS: 20,
   REFERRAL_BONUS: 50,
-  TASK_BONUS: 25,
-
-  MIN_WITHDRAW: 5000,
-  RATES: {
-    bkash: { coinsPerTaka: 100, symbol: '৳', label: 'bKash' },
-    nagad: { coinsPerTaka: 100, symbol: '৳', label: 'Nagad' },
-    usdt:  { coinsPerUsd: 10000, symbol: '$', label: 'USDT' },
-    ton:   { coinsPerTon: 50000, symbol: ' TON', label: 'TON' }
-  }
+  CHECKIN_BONUS: 20,
+  PROFILE_BONUS: 30,
+  MIN_WITHDRAW: 5000
 };
 
-/* ============================================================
-   TELEGRAM
-   ============================================================ */
 const tg = window.Telegram?.WebApp;
-tg?.ready();
-tg?.expand();
+tg?.ready(); tg?.expand();
 try { tg?.setHeaderColor?.('#0f0f23'); tg?.setBackgroundColor?.('#0f0f23'); } catch {}
 
-const tgUser = tg?.initDataUnsafe?.user || {
-  id: 123456789,
-  first_name: 'Guest',
-  username: 'guest',
-  photo_url: null
-};
+const tgUser = tg?.initDataUnsafe?.user || { id: 123456789, first_name: 'Guest', username: 'guest', photo_url: null };
 
-/* ============================================================
-   LOCAL STORAGE
-   ============================================================ */
-const LOCAL_KEY = 'airdrop_v3_' + tgUser.id;
-
+const LOCAL_KEY = 'taskearn_v1_' + tgUser.id;
 function defaultState() {
   return {
-    balance: 0,
-    totalEarned: 0,
-    todayCount: 0,
+    balance: 0, totalEarned: 0, todayCount: 0,
     lastResetDate: new Date().toDateString(),
-    referrals: [],
-    tasksDone: [],
-    withdrawals: []
+    lastCheckinDate: null,
+    profileDone: false,
+    referrals: [], withdrawals: []
   };
 }
-
 function loadState() {
   try {
     const raw = localStorage.getItem(LOCAL_KEY);
     if (raw) {
       const s = JSON.parse(raw);
       const today = new Date().toDateString();
-      if (s.lastResetDate !== today) {
-        s.todayCount = 0;
-        s.lastResetDate = today;
-      }
+      if (s.lastResetDate !== today) { s.todayCount = 0; s.lastResetDate = today; }
       return s;
     }
   } catch {}
   return defaultState();
 }
-
-function saveState(s) {
-  try { localStorage.setItem(LOCAL_KEY, JSON.stringify(s)); } catch {}
-}
+function saveState(s) { try { localStorage.setItem(LOCAL_KEY, JSON.stringify(s)); } catch {} }
 
 let state = loadState();
-let selectedMethod = 'bkash';
 let adInProgress = false;
+let adsgramReady = false;
+let adController = null;
 
-/* ============================================================
-   UI HELPERS
-   ============================================================ */
 const $ = id => document.getElementById(id);
 
 function updateUI() {
   $('userName').textContent = tgUser.first_name || 'User';
   $('userId').textContent = 'ID: ' + tgUser.id;
   if (tgUser.photo_url) $('userAvatar').src = tgUser.photo_url;
-
   $('balance').textContent = state.balance;
   $('todayCount').textContent = state.todayCount;
   $('refCount').textContent = state.referrals.length;
   $('totalEarned').textContent = state.totalEarned;
-
   $('walletBalance').textContent = state.balance;
-  const usd = (state.balance / 10000).toFixed(2);
-  $('walletUsd').textContent = usd;
-
+  $('walletUsd').textContent = (state.balance / 10000).toFixed(2);
   $('friendsCount').textContent = state.referrals.length;
   $('friendsEarned').textContent = state.referrals.length * CONFIG.REFERRAL_BONUS;
+
+  // Check-in button state
+  const today = new Date().toDateString();
+  const checkinBtn = $('checkinBtn');
+  if (state.lastCheckinDate === today) {
+    checkinBtn.textContent = '✓ Claimed';
+    checkinBtn.disabled = true;
+  }
+
+  // Profile button state
+  const profileBtn = $('profileBtn');
+  if (state.profileDone) {
+    profileBtn.textContent = '✓ Done';
+    profileBtn.disabled = true;
+  }
 
   renderWithdrawHistory();
   renderFriendsList();
@@ -593,471 +357,182 @@ function toast(msg, type = '') {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.className = 'toast ' + type, 2500);
 }
+function showLoading(show) { $('loading').classList.toggle('show', !!show); }
+function haptic(t = 'light') { try { tg?.HapticFeedback?.impactOccurred(t); } catch {} }
+function notify(t = 'success') { try { tg?.HapticFeedback?.notificationOccurred(t); } catch {} }
 
-function showLoading(show, msg = 'Loading...') {
-  $('loadingMsg').textContent = msg;
-  $('loading').classList.toggle('show', !!show);
-}
-
-function haptic(type = 'light') {
-  try { tg?.HapticFeedback?.impactOccurred(type); } catch {}
-}
-function notify(type = 'success') {
-  try { tg?.HapticFeedback?.notificationOccurred(type); } catch {}
-}
-
-function showModal(title, text, onConfirm) {
-  $('modalTitle').textContent = title;
-  $('modalText').innerHTML = text;
-  $('modal').classList.add('show');
-  const confirmBtn = $('modalConfirm');
-  const cancelBtn = $('modalCancel');
-  const cleanup = () => {
-    $('modal').classList.remove('show');
-    confirmBtn.onclick = null;
-    cancelBtn.onclick = null;
-  };
-  confirmBtn.onclick = () => { cleanup(); onConfirm && onConfirm(); };
-  cancelBtn.onclick = cleanup;
-}
-
-/* ============================================================
-   API (optional backend)
-   ============================================================ */
-async function apiCall(endpoint, data = {}) {
-  if (!CONFIG.API_BASE) return null;
-  try {
-    const res = await fetch(CONFIG.API_BASE + endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...data, initData: tg?.initData })
-    });
-    return await res.json();
-  } catch (e) {
-    console.error(e);
-    return { ok: false, error: 'Network error' };
-  }
-}
-
-/* ============================================================
-   ADSGRAM — FULL EVENT LISTENERS (MISSING PART ADDED)
-   ============================================================ */
-let adController = null;
-let adsgramReady = false;
-
+/* ========== ADSGRAM (EVENT-BASED REWARD) ========== */
 function initAdsgram() {
-  if (!window.Adsgram) {
-    console.warn('⚠️ Adsgram SDK not loaded');
-    return false;
-  }
-  if (CONFIG.ADSGRAM_BLOCK_ID === 'YOUR_BLOCK_ID') {
-    console.warn('⚠️ Adsgram Block ID set করা হয়নি');
-    return false;
-  }
+  if (!window.Adsgram || CONFIG.ADSGRAM_BLOCK_ID === 'YOUR_BLOCK_ID') return false;
   try {
-    adController = window.Adsgram.init({
-      blockId: CONFIG.ADSGRAM_BLOCK_ID,
-      debug: false   // ← Production এ অবশ্যই false
-    });
-    adsgramReady = true;
-
-    /* ---------- EVENT LISTENERS (সবচেয়ে গুরুত্বপূর্ণ অংশ) ---------- */
-    // onReward: শুধু এখানেই reward দিতে হবে — এটাই একমাত্র নির্ভরযোগ্য সিগন্যাল
+    adController = window.Adsgram.init({ blockId: CONFIG.ADSGRAM_BLOCK_ID, debug: false });
     adController.addEventListener('onReward', () => {
-      console.log('✅ onReward fired — user watched full ad');
       giveAdReward();
     });
-
-    // onSkip: ইউজার অ্যাড skip/close করলে — reward দেবেন না
     adController.addEventListener('onSkip', () => {
-      console.log('⚠️ onSkip fired — user skipped ad, no reward');
-      adInProgress = false;
-      resetAdButton();
-      toast('Ad skipped. No reward.', 'error');
+      adInProgress = false; resetAdBtn(); toast('Ad skipped. No reward.', 'error');
     });
-
-    // onError: অ্যাড লোড/প্লেব্যাকে সমস্যা হলে
     adController.addEventListener('onError', () => {
-      console.log('❌ onError fired');
-      adInProgress = false;
-      resetAdButton();
-      toast('Ad error. Try again.', 'error');
+      adInProgress = false; resetAdBtn(); toast('Ad error. Try again.', 'error');
     });
-
-    // onBannerNotFound: কোনো অ্যাড না থাকলে
     adController.addEventListener('onBannerNotFound', () => {
-      console.log('📭 onBannerNotFound — no ad available');
-      adInProgress = false;
-      resetAdButton();
-      toast('No ads available. Try later.', 'error');
+      adInProgress = false; resetAdBtn(); toast('No ads available.', 'error');
     });
-
-    // onNonStopShow: ইউজার পরপর অনেকবার অ্যাড দেখতে চাইলে
-    adController.addEventListener('onNonStopShow', () => {
-      console.log('🚫 onNonStopShow');
-      toast('Please wait before watching again', 'error');
-    });
-
-    // onTooLongSession: সেশন অনেক দীর্ঘ হলে
-    adController.addEventListener('onTooLongSession', () => {
-      console.log('⏰ onTooLongSession');
-      toast('Session too long. Restart app.', 'error');
-    });
-
-    console.log('✅ Adsgram initialized with all event listeners');
+    adsgramReady = true;
+    console.log('✅ Adsgram ready');
     return true;
-  } catch (e) {
-    console.error('Adsgram init error:', e);
-    return false;
-  }
+  } catch (e) { console.error(e); return false; }
 }
 
-/* ---------- Reward giver (only called from onReward) ---------- */
 async function giveAdReward() {
-  if (!adInProgress) return;   // guard against duplicate
-
-  let ok = false;
-  if (CONFIG.API_BASE) {
-    const res = await apiCall('/ad/complete', {});
-    if (res && res.ok) {
-      state.balance = res.balance;
-      state.todayCount = res.todayCount;
-      state.totalEarned = res.totalEarned;
-      ok = true;
-    }
-  } else {
-    state.balance += CONFIG.REWARD_PER_AD;
-    state.totalEarned += CONFIG.REWARD_PER_AD;
-    state.todayCount += 1;
-    ok = true;
-  }
-
-  if (ok) {
-    saveState(state);
-    updateUI();
-    toast('+' + CONFIG.REWARD_PER_AD + ' coins! 🎉', 'success');
-    notify('success');
-  }
-
-  adInProgress = false;
-  resetAdButton();
+  if (!adInProgress) return;
+  state.balance += CONFIG.REWARD_PER_AD;
+  state.totalEarned += CONFIG.REWARD_PER_AD;
+  state.todayCount += 1;
+  saveState(state); updateUI();
+  toast('+' + CONFIG.REWARD_PER_AD + ' coins! 🎉', 'success');
+  notify('success');
+  adInProgress = false; resetAdBtn();
 }
-
-function resetAdButton() {
+function resetAdBtn() {
   const btn = $('watchAdBtn');
-  if (!btn) return;
-  btn.disabled = false;
-  btn.textContent = '▶️ Watch Ad';
+  if (btn) { btn.disabled = false; btn.textContent = '▶️ Watch'; }
 }
 
-/* ============================================================
-   WATCH AD — uses onReward event (not .then)
-   ============================================================ */
-$('watchAdBtn').addEventListener('click', async () => {
+$('watchAdBtn').addEventListener('click', () => {
   if (adInProgress) return;
-
-  if (state.todayCount >= CONFIG.MAX_DAILY_ADS) {
-    toast('Daily limit reached! Come back tomorrow ⏰', 'error');
-    return;
-  }
-
-  if (!adsgramReady || !adController) {
-    toast('Ads not available. Try later.', 'error');
-    return;
-  }
-
+  if (state.todayCount >= CONFIG.MAX_DAILY_ADS) { toast('Daily limit reached', 'error'); return; }
+  if (!adsgramReady || !adController) { toast('Ads not available', 'error'); return; }
   adInProgress = true;
   const btn = $('watchAdBtn');
-  btn.disabled = true;
-  btn.textContent = '📺 Loading ad...';
-  haptic('light');
-
-  // Adsgram.show() — reward will be given inside onReward listener
-  adController.show()
-    .then((result) => {
-      // Promise resolved — but DO NOT give reward here!
-      // onReward event already handled it
-      console.log('Ad show resolved:', result);
-    })
-    .catch((result) => {
-      // Rejected — error/skip handled by event listeners
-      console.log('Ad show rejected:', result);
-    })
-    .finally(() => {
-      // fallback in case events didn't fire
-      setTimeout(() => {
-        if (adInProgress) {
-          adInProgress = false;
-          resetAdButton();
-        }
-      }, 500);
-    });
+  btn.disabled = true; btn.textContent = '📺 Loading...';
+  haptic();
+  adController.show().catch(() => {
+    // handled by event listeners
+  }).finally(() => {
+    setTimeout(() => { if (adInProgress) { adInProgress = false; resetAdBtn(); } }, 800);
+  });
 });
 
-/* ============================================================
-   REFERRAL
-   ============================================================ */
+/* ========== DAILY CHECK-IN (NO AD) ========== */
+$('checkinBtn').addEventListener('click', () => {
+  const today = new Date().toDateString();
+  if (state.lastCheckinDate === today) { toast('Already claimed today', 'error'); return; }
+  state.lastCheckinDate = today;
+  state.balance += CONFIG.CHECKIN_BONUS;
+  state.totalEarned += CONFIG.CHECKIN_BONUS;
+  saveState(state); updateUI();
+  toast('+' + CONFIG.CHECKIN_BONUS + ' coins! 📅', 'success');
+  notify('success'); haptic();
+});
+
+/* ========== COMPLETE PROFILE (NO AD) ========== */
+$('profileBtn').addEventListener('click', () => {
+  if (state.profileDone) return;
+  state.profileDone = true;
+  state.balance += CONFIG.PROFILE_BONUS;
+  state.totalEarned += CONFIG.PROFILE_BONUS;
+  saveState(state); updateUI();
+  toast('+' + CONFIG.PROFILE_BONUS + ' coins! 👤', 'success');
+  notify('success'); haptic();
+});
+
+/* ========== REFERRAL ========== */
 const refLink = `https://t.me/${CONFIG.BOT_USERNAME}?start=ref_${tgUser.id}`;
 $('refLink').value = refLink;
 $('refLink2').value = refLink;
 
-function handleCopy(btnId) {
-  $(btnId).addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(refLink);
-      toast('Link copied! 📋', 'success');
-    } catch {
-      const inp = $(btnId === 'copyBtn' ? 'refLink' : 'refLink2');
-      inp.select();
-      document.execCommand('copy');
-      toast('Link copied!', 'success');
-    }
-    haptic('light');
+function copyRef(id) {
+  $(id).addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(refLink); toast('Copied! 📋', 'success'); }
+    catch { $('refLink').select(); document.execCommand('copy'); toast('Copied!', 'success'); }
+    haptic();
   });
 }
-handleCopy('copyBtn');
-handleCopy('copyBtn2');
+copyRef('copyBtn'); copyRef('copyBtn2');
 
 function shareRef() {
-  const text = `🎁 Join Airdrop Earn and get free coins!\n\n${refLink}`;
+  const text = `🎁 Join and earn free coins!\n\n${refLink}`;
   const url = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(text)}`;
-  if (tg?.openTelegramLink) tg.openTelegramLink(url);
-  else window.open(url, '_blank');
+  if (tg?.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank');
   haptic('medium');
 }
 $('shareBtn').addEventListener('click', shareRef);
 $('shareBtn2').addEventListener('click', shareRef);
 
-/* ============================================================
-   TASKS
-   ============================================================ */
-document.querySelectorAll('.task-btn').forEach(btn => {
-  btn.addEventListener('click', async () => {
-    if (btn.disabled) return;
-    const taskEl = btn.closest('.task');
-    const taskName = taskEl.dataset.task;
-
-    const url = btn.dataset.url;
-    if (tg?.openTelegramLink) tg.openTelegramLink(url);
-    else window.open(url, '_blank');
-
-    setTimeout(async () => {
-      if (state.tasksDone.includes(taskName)) return;
-
-      let ok = false;
-      if (CONFIG.API_BASE) {
-        const res = await apiCall('/task/complete', { task: taskName });
-        if (res && res.ok) {
-          state.balance = res.balance;
-          ok = true;
-        }
-      } else {
-        state.tasksDone.push(taskName);
-        state.balance += CONFIG.TASK_BONUS;
-        state.totalEarned += CONFIG.TASK_BONUS;
-        ok = true;
-      }
-
-      if (ok) {
-        saveState(state);
-        updateUI();
-        toast('+' + CONFIG.TASK_BONUS + ' coins! ✅', 'success');
-        notify('success');
-        btn.textContent = '✓ Done';
-        btn.disabled = true;
-      }
-    }, 4500);
-  });
-});
-
-state.tasksDone.forEach(t => {
-  const el = document.querySelector(`.task[data-task="${t}"] .task-btn`);
-  if (el) { el.textContent = '✓ Done'; el.disabled = true; }
-});
-
-/* ============================================================
-   PAGE NAVIGATION
-   ============================================================ */
-document.querySelectorAll('.nav-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const page = btn.dataset.page;
-
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    const target = $('page-' + page);
-    if (target) target.classList.add('active');
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    haptic('light');
-  });
-});
-
-/* ============================================================
-   WALLET — Withdraw
-   ============================================================ */
-document.querySelectorAll('.method').forEach(m => {
-  m.addEventListener('click', () => {
-    document.querySelectorAll('.method').forEach(x => x.classList.remove('selected'));
-    m.classList.add('selected');
-    selectedMethod = m.dataset.method;
-
-    const placeholders = {
-      bkash: 'Enter your bKash number (01XXXXXXXXX)',
-      nagad: 'Enter your Nagad number (01XXXXXXXXX)',
-      usdt: 'Enter your USDT TRC20 address',
-      ton: 'Enter your TON wallet address'
-    };
-    $('walletAddress').placeholder = placeholders[selectedMethod];
-
-    const rate = CONFIG.RATES[selectedMethod];
-    let hint = '';
-    if (selectedMethod === 'bkash' || selectedMethod === 'nagad') {
-      hint = `Min withdraw: ${CONFIG.MIN_WITHDRAW} 🪙 (≈ ৳${CONFIG.MIN_WITHDRAW / rate.coinsPerTaka})`;
-    } else if (selectedMethod === 'usdt') {
-      hint = `Min withdraw: ${CONFIG.MIN_WITHDRAW} 🪙 (≈ $${(CONFIG.MIN_WITHDRAW / rate.coinsPerUsd).toFixed(2)})`;
-    } else if (selectedMethod === 'ton') {
-      hint = `Min withdraw: ${CONFIG.MIN_WITHDRAW} 🪙 (≈ ${(CONFIG.MIN_WITHDRAW / rate.coinsPerTon).toFixed(4)} TON)`;
-    }
-    $('withdrawHint').textContent = hint;
-
-    haptic('light');
-  });
-});
-
+/* ========== WALLET ========== */
 $('withdrawBtn').addEventListener('click', async () => {
   const address = $('walletAddress').value.trim();
   const amount = parseInt($('withdrawAmount').value) || 0;
-
-  if (!address) { toast('Enter your wallet/number', 'error'); return; }
-
-  if (selectedMethod === 'bkash' || selectedMethod === 'nagad') {
-    if (!/^01[3-9]\d{8}$/.test(address)) {
-      toast('Invalid bKash/Nagad number', 'error'); return;
-    }
-  } else if (selectedMethod === 'usdt') {
-    if (address.length < 20 || !address.startsWith('T')) {
-      toast('Invalid USDT TRC20 address', 'error'); return;
-    }
-  } else if (selectedMethod === 'ton') {
-    if (address.length < 20) { toast('Invalid TON address', 'error'); return; }
-  }
-
-  if (amount < CONFIG.MIN_WITHDRAW) {
-    toast(`Minimum withdraw is ${CONFIG.MIN_WITHDRAW} 🪙`, 'error'); return;
-  }
-
-  if (amount > state.balance) {
-    toast('Insufficient balance', 'error'); return;
-  }
-
-  const rate = CONFIG.RATES[selectedMethod];
-  let valueText = '';
-  if (selectedMethod === 'bkash' || selectedMethod === 'nagad') {
-    valueText = `৳${(amount / rate.coinsPerTaka).toFixed(2)}`;
-  } else if (selectedMethod === 'usdt') {
-    valueText = `$${(amount / rate.coinsPerUsd).toFixed(2)}`;
-  } else if (selectedMethod === 'ton') {
-    valueText = `${(amount / rate.coinsPerTon).toFixed(4)} TON`;
-  }
-
-  showModal(
-    '💸 Confirm Withdraw',
-    `You will receive <b>${valueText}</b> to your <b>${rate.label}</b>:<br><br><code style="word-break:break-all;">${address}</code><br><br>Amount: <b>${amount} 🪙</b>`,
-    async () => {
-      showLoading(true, 'Processing withdraw...');
-
-      let ok = false;
-      if (CONFIG.API_BASE) {
-        const res = await apiCall('/withdraw/request', { method: selectedMethod, address, amount });
-        ok = res && res.ok;
-        if (ok) state.balance = res.balance;
-      } else {
-        await new Promise(r => setTimeout(r, 1200));
-        state.balance -= amount;
-        state.withdrawals.unshift({
-          method: selectedMethod, address, amount, value: valueText,
-          status: 'pending', date: Date.now()
-        });
-        ok = true;
-      }
-
-      showLoading(false);
-
-      if (ok) {
-        saveState(state);
-        updateUI();
-        $('walletAddress').value = '';
-        $('withdrawAmount').value = '';
-        toast('Withdraw requested! ⏳', 'success');
-        notify('success');
-      } else {
-        toast('Withdraw failed', 'error');
-        notify('error');
-      }
-    }
-  );
+  if (!/^01[3-9]\d{8}$/.test(address)) { toast('Invalid bKash/Nagad number', 'error'); return; }
+  if (amount < CONFIG.MIN_WITHDRAW) { toast(`Minimum ${CONFIG.MIN_WITHDRAW} 🪙`, 'error'); return; }
+  if (amount > state.balance) { toast('Insufficient balance', 'error'); return; }
+  showLoading(true);
+  await new Promise(r => setTimeout(r, 1000));
+  state.balance -= amount;
+  state.withdrawals.unshift({
+    method: 'bKash', address, amount,
+    value: `৳${(amount / 100).toFixed(2)}`,
+    status: 'pending', date: Date.now()
+  });
+  saveState(state); updateUI();
+  showLoading(false);
+  $('walletAddress').value = ''; $('withdrawAmount').value = '';
+  toast('Withdraw requested! ⏳', 'success'); notify('success');
 });
 
-/* ============================================================
-   RENDER
-   ============================================================ */
 function renderWithdrawHistory() {
   const el = $('withdrawHistory');
-  if (!state.withdrawals || !state.withdrawals.length) {
-    el.innerHTML = `<div class="empty-state"><div class="big">📭</div>No withdrawals yet</div>`;
+  if (!state.withdrawals.length) {
+    el.innerHTML = '<div style="text-align:center; padding:20px; opacity:0.6; font-size:13px;">No withdrawals yet</div>';
     return;
   }
-  el.innerHTML = state.withdrawals.map(w => {
-    const rate = CONFIG.RATES[w.method] || { label: w.method };
-    const time = new Date(w.date).toLocaleDateString();
-    return `
-      <div class="history-item">
-        <div>
-          <div style="font-weight:600;">${rate.label} • ${w.amount} 🪙</div>
-          <div style="font-size:11px; opacity:0.6;">${time} • ${w.value}</div>
-        </div>
-        <span class="history-status ${w.status}">${w.status}</span>
+  el.innerHTML = state.withdrawals.map(w => `
+    <div class="task-row">
+      <div class="task-info">
+        <div class="task-title">${w.method} • ${w.amount} 🪙</div>
+        <div class="task-desc">${new Date(w.date).toLocaleDateString()} • ${w.value}</div>
       </div>
-    `;
-  }).join('');
+      <span class="badge ${w.status === 'success' ? '' : 'pending'}">${w.status}</span>
+    </div>
+  `).join('');
 }
 
 function renderFriendsList() {
   const el = $('friendsList');
-  if (!state.referrals || !state.referrals.length) {
-    el.innerHTML = `<div class="empty-state"><div class="big">👋</div>No friends invited yet.<br>Share your link to start earning!</div>`;
+  if (!state.referrals.length) {
+    el.innerHTML = '<div style="text-align:center; padding:20px; opacity:0.6; font-size:13px;">No friends yet</div>';
     return;
   }
-  el.innerHTML = state.referrals.map(r => {
-    const initial = (r.name || 'U')[0].toUpperCase();
-    const date = r.date ? new Date(r.date).toLocaleDateString() : '';
-    return `
-      <div class="friend-item">
-        <div class="friend-avatar">${initial}</div>
-        <div class="friend-info">
-          <div class="friend-name">${r.name || 'User'}</div>
-          <div class="friend-date">${date}</div>
-        </div>
-        <div class="friend-bonus">+${CONFIG.REFERRAL_BONUS} 🪙</div>
+  el.innerHTML = state.referrals.map(r => `
+    <div class="task-row">
+      <div class="task-info">
+        <div class="task-title">${r.name || 'User'}</div>
+        <div class="task-desc">${r.date ? new Date(r.date).toLocaleDateString() : ''}</div>
       </div>
-    `;
-  }).join('');
+      <div class="task-reward">+${CONFIG.REFERRAL_BONUS} 🪙</div>
+    </div>
+  `).join('');
 }
 
-/* ============================================================
-   INIT
-   ============================================================ */
+/* ========== NAV ========== */
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const target = $('page-' + btn.dataset.page);
+    if (target) target.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    haptic();
+  });
+});
+
+/* ========== INIT ========== */
 const ok = initAdsgram();
-if (!ok) {
-  console.warn('Adsgram not ready — watch ad disabled until Block ID is set');
-}
-
+if (!ok) console.warn('Adsgram not ready (set Block ID)');
 updateUI();
-
-console.log('🚀 Airdrop Earn v3 loaded');
-console.log('Adsgram ready:', ok);
+console.log('🚀 Task Earn loaded');
 </script>
 </body>
-  </html>
+</html>
